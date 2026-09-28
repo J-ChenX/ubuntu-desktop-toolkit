@@ -1,0 +1,21 @@
+{
+  "host": "validation-host-1",
+  "versions": "libnautilus-extension1a:amd64\t1:42.6-0ubuntu2+localpathbar8\nlocal-gtk-filechooser-click-path\t1.0.0\nlocal-portal-click-path\t1.0.2\nnautilus\t1:42.6-0ubuntu2+localpathbar8\nnautilus-data\t1:42.6-0ubuntu2+localpathbar8\n",
+  "hashes": {
+    "/usr/bin/nautilus": "a4134bd9bdacca2c5cfaac36725751344b8bc85b0386957d985c95c0b8e4ad5e",
+    "/usr/lib/x86_64-linux-gnu/gtk-3.0/modules/libgtk-filechooser-click-path.so": "da7f6af7fa5a690c20b2083569cf0968faf4462c8a084220552ce022d03e6f27",
+    "/usr/lib/local-portal-click-path/libportal-click-path.so": "02c889b88649063dd92d774049c1c8883b038555354b237d751f7f99bcc1735b"
+  },
+  "runtime": {
+    "hash": "73b5ca66aaae23c09aa8754587b775b043b1f55ab3b25c60e88320db3a704998"
+  },
+  "gtk3_enabled": [
+    "gtk-filechooser-click-path"
+  ],
+  "experimental": true,
+  "portal": "Environment=LD_PRELOAD=/usr/lib/local-portal-click-path/libportal-click-path.so\nActiveState=active\n",
+  "portal_module_mapped": true,
+  "css_unchanged": true,
+  "sushi": "unknown ok not-installed",
+  "redacted": "Host identity, user paths, PIDs and session lock state removed for public distribution."
+}

@@ -1,0 +1,14 @@
+{
+  "method": "Xvfb, GIO local, 120 scripted pointer moves plus 2s settle; includes UI work, not frame-latency measurement; no stock baseline",
+  "results": [
+    {
+      "file_count": 5000,
+      "idle_cpu_percent_one_core": 0.0,
+      "drag_and_settle_seconds": 4.32,
+      "drag_and_settle_cpu_seconds": 1.61,
+      "drag_and_settle_cpu_percent_one_core": 37.31,
+      "pss_before_mib": 169.37,
+      "pss_after_mib": 169.89
+    }
+  ]
+}

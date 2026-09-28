@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "files": {
+    "modules/terminal/fonts/MapleMono-NF-CN-Bold.ttf": "9e0c22a032c255b2da2c073d6cca6f8cf6fd6f214ae5407eb9f1aa523713729b",
+    "modules/terminal/fonts/MapleMono-NF-CN-BoldItalic.ttf": "9d6e76fbb5767406efd1f5ae2d32f5439de3b4d4063b128e4186ad5619267120",
+    "modules/terminal/fonts/MapleMono-NF-CN-Italic.ttf": "39e6c6e611e65e6d0780f6279561f954f9db51221987d0924c45f6121eaf9054",
+    "modules/terminal/fonts/MapleMono-NF-CN-Regular.ttf": "bb8e8e8c263896f42555107202f1847f7a42c340a3e532df9c4d585c9794411c",
+    "modules/input-method/packages/sogoupinyin_4.2.1.145_amd64.deb": "3111af17a6abddd80b856aa9c1f579a137d69f3d735ead936ddb6e5f08b59f3b"
+  }
+}

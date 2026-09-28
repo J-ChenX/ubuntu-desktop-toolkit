@@ -1,0 +1,12 @@
+{
+  "version": "1:42.6-0ubuntu2+localpathbar8",
+  "nautilus_sha256": "a4134bd9bdacca2c5cfaac36725751344b8bc85b0386957d985c95c0b8e4ad5e",
+  "rustc": "1.98.1",
+  "packages": {
+    "nautilus-data_42.6-0ubuntu2+localpathbar8_all.deb": "2d812647aa3c44666045bc66fef15cceab8e2ca936626a31767251a30f6fb9a2",
+    "libnautilus-extension1a_42.6-0ubuntu2+localpathbar8_amd64.deb": "2807cc7437aab80af1ae294ee55c04d2e92e756770004ce870ccab481b250694",
+    "local-portal-click-path_1.0.2_amd64.deb": "ada96324212aacc725a448bcbb5be7240ecd075c2abd5899b9dd1bdaf36536bc",
+    "local-gtk-filechooser-click-path_1.0.0_amd64.deb": "9b326fd44d9082dd0209cfd4b972dea477bd8ff5ea3d21e054d16f2b77793287",
+    "nautilus_42.6-0ubuntu2+localpathbar8_amd64.deb": "002bce2f28ea06affe127e2d6ac45c8d0334d956d81c145df408e41092ce07f9"
+  }
+}

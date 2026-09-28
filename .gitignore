@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+work/
+backups/
+
+# Downloaded third-party assets: keep locally, never commit
+/modules/terminal/fonts/*.ttf
+/modules/terminal/fonts/*.otf
+/modules/input-method/packages/*.deb
+/downloads/
+
+# Local build and editor artifacts
+/target/
+**/target/
+/src/gtk3-chooser/build/
+/src/gtk4-chooser/build/
+/src/gtk*-chooser/*.so
+/src/gtk*-chooser/*.deb
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+.vscode/
+.idea/

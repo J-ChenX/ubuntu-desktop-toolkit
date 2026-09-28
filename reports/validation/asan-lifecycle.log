@@ -1,0 +1,24 @@
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.a11y.Bus' requested by ':1.0' (uid=1000 pid=1015651 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[1015673]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=1000 pid=1015651 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1015673]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.3' (uid=1000 pid=1015679 comm="/REDACTED/test-workspace" label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.portal.Documents' requested by ':1.5' (uid=1000 pid=1015686 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.6' (uid=1000 pid=1015691 comm="/usr/libexec/xdg-document-portal " label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.impl.portal.desktop.gnome' requested by ':1.5' (uid=1000 pid=1015686 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.impl.portal.desktop.gnome'
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.5' (uid=1000 pid=1015686 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+** (/usr/libexec/xdg-desktop-portal:1015686): WARNING **: 14:05:15.071: Failed connect to PipeWire: Couldn't connect to PipeWire
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Activating service name='org.freedesktop.secrets' requested by ':1.5' (uid=1000 pid=1015686 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+** Message: 14:05:15.079: couldn't access control socket: /tmp/nautilus-refine.AQi0VG/keyring/control: 没有那个文件或目录
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.secrets'
+dbus-daemon[1015602]: [session uid=1000 pid=1015602] Successfully activated service 'org.freedesktop.portal.Desktop'
+PASS 20 rapid drag/release cycles flush pending frame and retain exact selection
+PASS resize and directory mutation during drag leave only existing selections and no stale GTK access
+PASS closing an active gesture releases pending frame and cached objects
+ALL LIFECYCLE TESTS PASSED

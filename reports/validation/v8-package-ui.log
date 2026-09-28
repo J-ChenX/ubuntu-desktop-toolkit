@@ -1,0 +1,37 @@
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.a11y.Bus' requested by ':1.0' (uid=1000 pid=1032179 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[1032186]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=1000 pid=1032179 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1032186]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.3' (uid=1000 pid=1032192 comm="/REDACTED/test-workspace" label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.portal.Documents' requested by ':1.5' (uid=1000 pid=1032200 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.6' (uid=1000 pid=1032205 comm="/usr/libexec/xdg-document-portal " label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.impl.portal.desktop.gnome' requested by ':1.5' (uid=1000 pid=1032200 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.impl.portal.desktop.gnome'
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.5' (uid=1000 pid=1032200 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+** (/usr/libexec/xdg-desktop-portal:1032200): WARNING **: 14:11:56.453: Failed connect to PipeWire: Couldn't connect to PipeWire
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Activating service name='org.freedesktop.secrets' requested by ':1.5' (uid=1000 pid=1032200 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+** Message: 14:11:56.459: couldn't access control socket: /tmp/nautilus-refine.K7vroq/keyring/control: 没有那个文件或目录
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.secrets'
+dbus-daemon[1032162]: [session uid=1000 pid=1032162] Successfully activated service 'org.freedesktop.portal.Desktop'
+PASS cut file content becomes translucent while selection outline remains
+PASS clipboard replacement restores original opacity
+PASS left-to-right partial overlap does not select; gray solid rectangle visible
+PASS left-to-right complete containment selects the file
+PASS right-to-left touching selects; gray dashed rectangle visible
+PASS Shift rectangle adds to existing selection
+PASS Ctrl rectangle toggles only intersected selection
+PASS Escape cancels active rectangle without moving files
+PASS middle-click background merges all windows and all existing tabs without duplication
+TABS [('dnd-fixture', [256, 54, 71, 30]), ('third', [446, 54, 48, 30]), ('fourth', [614, 54, 48, 30]), ('nested', [782, 54, 48, 30])]
+PASS merged tab retains its original back history
+PASS dragging a tab outside splits it into a separate window without losing tabs
+PASS merge after detaching is repeatable and keeps all tabs
+PASS middle-click tab duplicates the clicked path in the same window without closing originals
+PASS merge removes duplicate full paths both within the target and across windows
+PASS single-window merge deduplicates tabs and retains the active location
+ALL REFINEMENT TESTS PASSED

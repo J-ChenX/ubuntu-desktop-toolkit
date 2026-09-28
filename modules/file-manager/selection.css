@@ -1,0 +1,37 @@
+
+/* BEGIN synced Nautilus selection */
+/* Nautilus: Yaru orange selection tile with a white-on-orange filename. */
+.nautilus-window flowboxchild {
+  padding: 10px;
+  margin: 4px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+}
+.nautilus-window flowboxchild:hover {
+  background-color: #fff3ed;
+}
+.nautilus-window flowboxchild:selected,
+.nautilus-window flowboxchild:selected:hover,
+.nautilus-window flowboxchild:selected:backdrop {
+  background-color: #fce4d8;
+  border-color: #e95420;
+  color: #873310;
+  outline: none;
+  box-shadow: none;
+}
+.nautilus-window flowboxchild:selected .icon-ui-labels-box {
+  background-color: #e95420;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 4px;
+}
+.nautilus-window flowboxchild:selected label {
+  background-color: transparent;
+  color: #ffffff;
+}
+.nautilus-window flowboxchild:selected image {
+  -gtk-icon-effect: none;
+  -gtk-icon-shadow: none;
+  opacity: 1;
+}
+/* END synced Nautilus selection */

@@ -1,0 +1,23 @@
+name: Repository checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify release and repository
+        run: |
+          ./desktopctl check
+          python3 tests/test-management.py
+          python3 tests/test-repository.py
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.98.1 --profile minimal --component clippy
+      - name: Test Rust components
+        run: |
+          cd src/desktopctl
+          cargo +1.98.1 test --locked --offline --target-dir "$RUNNER_TEMP/desktopctl-target"
+          cd ../selection-core
+          cargo +1.98.1 test --locked --offline --target-dir "$RUNNER_TEMP/selection-target"
+          cargo +1.98.1 clippy --locked --offline --all-targets --target-dir "$RUNNER_TEMP/selection-target" -- -D warnings

@@ -1,0 +1,61 @@
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.a11y.Bus' requested by ':1.0' (uid=1000 pid=1033972 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[1034154]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=1000 pid=1033972 comm="/usr/bin/python3 work/nautilus-refinements/tests/u" label="unconfined")
+dbus-daemon[1034154]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.3' (uid=1000 pid=1034186 comm="/REDACTED/test-workspace" label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.portal.Documents' requested by ':1.5' (uid=1000 pid=1034232 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.6' (uid=1000 pid=1034248 comm="/usr/libexec/xdg-document-portal " label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.impl.portal.desktop.gnome' requested by ':1.5' (uid=1000 pid=1034232 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.impl.portal.desktop.gnome'
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.5' (uid=1000 pid=1034232 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:18.042: Failed connect to PipeWire: Couldn't connect to PipeWire
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.freedesktop.secrets' requested by ':1.5' (uid=1000 pid=1034232 comm="/usr/libexec/xdg-desktop-portal " label="unconfined")
+** Message: 14:12:18.049: couldn't access control socket: /tmp/nautilus-refine.YUTDY2/keyring/control: 没有那个文件或目录
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.secrets'
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.freedesktop.portal.Desktop'
+TILE alpha.txt list item (213, 69, 132, 117)
+TILE destination list item (493, 69, 132, 117)
+PASS whole selected tile padding -> external application URI, original retained
+PASS Escape cancels drag without moving or renaming
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:25.800: A backend call failed: Inhibiting other than idle not supported
+PASS file tile -> folder tile moves file
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:26.311: A backend call failed: Inhibiting other than idle not supported
+PASS undo restores moved file
+MULTI ['beta.txt', 'alpha.txt']
+PASS multi-selection exports both files
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:31.981: A backend call failed: Inhibiting other than idle not supported
+PASS Ctrl-drag copies and keeps source
+PASS background rubberband selection retained
+
+(org.gnome.Nautilus:1035228): Tracker-WARNING **: 14:12:34.625: Could not delete '.meta.isrunning': No such file or directory
+
+** (org.gnome.Nautilus:1035228): WARNING **: 14:12:34.625: Unable to initialize tag manager: Database version is too old: got version 0, but 26 is needed
+WINDOWS 4194312 4197766 dnd-fixture
+ destination
+
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:37.167: A backend call failed: Inhibiting other than idle not supported
+PASS cross-window drop on background moves file
+
+** (/usr/libexec/xdg-desktop-portal:1034232): WARNING **: 14:12:37.960: A backend call failed: Inhibiting other than idle not supported
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.gnome.gedit' requested by ':1.3' (uid=1000 pid=1034186 comm="/REDACTED/test-workspace" label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.gnome.gedit'
+PASS same-directory no-op drop is rejected without an error dialog
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Activating service name='org.gnome.keyring.SystemPrompter' requested by ':1.10' (uid=1000 pid=1034553 comm="/usr/bin/gnome-keyring-daemon --start --foreground" label="unconfined")
+dbus-daemon[1033911]: [session uid=1000 pid=1033911] Successfully activated service 'org.gnome.keyring.SystemPrompter'
+PASS Chromium receives a File object with original filename and readable content
+ALL DND TESTS PASSED
+
+** (gnome-keyring-daemon:1034553): WARNING **: 14:12:43.013: prompting failed: The operation was cancelled
+
+(gcr-prompter:1035637): Gcr-WARNING **: 14:12:43.022: couldn't connect to session bus
+
+(gcr-prompter:1035637): Gcr-WARNING **: 14:12:43.022: couldn't connect to session bus

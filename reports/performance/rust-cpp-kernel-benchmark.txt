@@ -1,0 +1,8 @@
+C++ 60.614 ms
+Rust FFI 60.723 ms
+C++ 58.301 ms
+Rust FFI 62.068 ms
+C++ 57.707 ms
+Rust FFI 64.799 ms
+C++ 58.072 ms
+Rust FFI 60.734 ms

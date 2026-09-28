@@ -1,0 +1,12 @@
+[package]
+name = "udt-selection-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+license = "GPL-3.0-or-later"
+[lib]
+path = "lib.rs"
+crate-type = ["staticlib", "rlib"]
+[profile.release]
+opt-level = 3
+codegen-units = 1

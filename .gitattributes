@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.deb binary
+*.xz binary
+*.png binary
+/bin/desktopctl binary
+# Preserve vendored bytes for Cargo checksums and release integrity.
+/src/desktopctl/vendor/** -text -whitespace
+*.patch -text -whitespace
+/reports/validation/*.log -whitespace

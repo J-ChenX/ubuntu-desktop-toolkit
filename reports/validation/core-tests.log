@@ -1,0 +1,17 @@
+   Compiling udt-selection-core v0.1.0 (/home/USER/code/ubuntu-desktop-toolkit/src/selection-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+     Running unittests lib.rs (work/desktop-performance/core-target/debug/deps/udt_selection_core-d8f61d305df94368)
+
+running 3 tests
+test tests::ffi_rejects_null_and_alias ... ok
+test tests::rejects_invalid_queries ... ok
+test tests::exhaustive_geometry_and_modifiers ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests udt_selection_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

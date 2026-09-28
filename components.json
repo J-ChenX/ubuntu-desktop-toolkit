@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "platform": "Ubuntu 22.04 amd64 / GNOME 42",
+  "file_manager": {
+    "release_dir": "modules/file-manager/release",
+    "version": "1:42.6-0ubuntu2+localpathbar8",
+    "executable": "/usr/bin/nautilus"
+  },
+  "terminal": {
+    "module_dir": "modules/terminal",
+    "package": "terminator",
+    "profile": "modules/terminal/config/terminator.conf"
+  },
+  "sogou": {
+    "package_file": "modules/input-method/packages/sogoupinyin_4.2.1.145_amd64.deb",
+    "version": "4.2.1.145"
+  },
+  "management": {
+    "entry": "./desktopctl",
+    "resident_service": false,
+    "backend": "scripts/install.py"
+  },
+  "selection_core": {
+    "language": "Rust",
+    "version": "0.1.0",
+    "allocation_during_selection": false,
+    "ffi": "caller-owned POD arrays; no GTK pointers retained"
+  }
+}

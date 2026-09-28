@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>DnD Browser Test</title>
+<style>body{background:#eee;font:24px sans-serif;min-height:90vh;padding:30px}</style>
+Drop local test files here
+<script>
+window.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy'});
+window.addEventListener('drop',async e=>{e.preventDefault();let files=await Promise.all([...e.dataTransfer.files].map(async f=>({name:f.name,text:await f.text()})));document.body.textContent=JSON.stringify(files);document.title='RECEIVED:'+JSON.stringify(files)});
+</script>

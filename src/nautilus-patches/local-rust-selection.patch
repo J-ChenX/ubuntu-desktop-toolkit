@@ -1,0 +1,359 @@
+--- a/src/nautilus-view-icon-controller.c
++++ b/src/nautilus-view-icon-controller.c
+@@ -11,6 +11,7 @@
+ #include "nautilus-thumbnails.h"
+ #include "nautilus-dnd.h"
+ #include "nautilus-clipboard.h"
++#include "udt-selection.h"
+ #include "nautilus-files-view-dnd.h"
+ 
+ struct _NautilusViewIconController
+@@ -49,6 +50,14 @@
+     GdkModifierType band_modifiers;
+     GHashTable *band_initial;
+     guint band_scroll_id;
++    guint band_frame_id;
++    GPtrArray *band_children;
++    GArray *band_rects;
++    GByteArray *band_result;
++    GByteArray *band_current;
++    gboolean band_cache_dirty;
++    gint band_layout_width, band_layout_height;
++    guint band_cache_builds, band_updates;
+ 
+     GdkDragContext *drop_context;
+     GList *drop_selection;
+@@ -215,38 +224,94 @@
+ }
+ 
+ static void
++band_clear_cache (NautilusViewIconController *self)
++{
++    g_clear_pointer (&self->band_children, g_ptr_array_unref);
++    g_clear_pointer (&self->band_rects, g_array_unref);
++    g_clear_pointer (&self->band_result, g_byte_array_unref);
++    g_clear_pointer (&self->band_current, g_byte_array_unref);
++}
++
++static void
++band_layout_changed (GtkWidget *widget, GtkAllocation *a, NautilusViewIconController *self)
++{
++    if (a->width != self->band_layout_width || a->height != self->band_layout_height)
++        self->band_cache_dirty = TRUE;
++    self->band_layout_width = a->width;
++    self->band_layout_height = a->height;
++}
++
++static void
++band_items_changed (GListModel *model, guint position, guint removed, guint added,
++                    NautilusViewIconController *self)
++{
++    self->band_cache_dirty = TRUE;
++}
++
++static void
++band_build_cache (NautilusViewIconController *self)
++{
++    g_autoptr (GList) children = gtk_container_get_children (GTK_CONTAINER (self->view_ui));
++    band_clear_cache (self);
++    self->band_cache_builds++;
++    self->band_children = g_ptr_array_new_with_free_func (g_object_unref);
++    self->band_rects = g_array_sized_new (FALSE, FALSE, sizeof (UdtRect), g_list_length (children));
++    self->band_result = g_byte_array_new ();
++    self->band_current = g_byte_array_new ();
++    for (GList *l = children; l != NULL; l = l->next)
++    {
++        GtkAllocation a;
++        UdtRect r = {0};
++        guint8 selected;
++        g_autoptr (NautilusViewItemModel) model = NULL;
++        g_object_get (l->data, "model", &model, NULL);
++        if (model == NULL) continue;
++        gtk_widget_get_allocation (l->data, &a);
++        r.x = a.x; r.y = a.y; r.width = a.width; r.height = a.height;
++        r.initial = g_hash_table_contains (self->band_initial, nautilus_view_item_model_get_file (model));
++        g_ptr_array_add (self->band_children, g_object_ref (l->data));
++        g_array_append_val (self->band_rects, r);
++        selected = gtk_flow_box_child_is_selected (l->data);
++        g_byte_array_append (self->band_current, &selected, 1);
++    }
++    g_byte_array_set_size (self->band_result, self->band_rects->len);
++    self->band_cache_dirty = FALSE;
++}
++
++static void
+ update_band_selection (NautilusViewIconController *self, gboolean restore)
+ {
+-    double left = MIN (self->band_x, self->band_end_x);
+-    double top = MIN (self->band_y, self->band_end_y);
+-    double right = MAX (self->band_x, self->band_end_x);
+-    double bottom = MAX (self->band_y, self->band_end_y);
+-    gboolean crossing = self->band_end_x < self->band_x;
+-    g_autoptr (GList) children = gtk_container_get_children (GTK_CONTAINER (self->view_ui));
+-
++    gboolean changed = FALSE;
++    UdtQuery q = { MIN (self->band_x, self->band_end_x), MIN (self->band_y, self->band_end_y),
++                   MAX (self->band_x, self->band_end_x), MAX (self->band_y, self->band_end_y), 0, 0 };
++    self->band_updates++;
++    if (self->band_cache_dirty || self->band_children == NULL) band_build_cache (self);
++    if (self->band_end_x < self->band_x) q.flags |= 1;
++    if (self->band_modifiers & GDK_CONTROL_MASK) q.flags |= 2;
++    if (self->band_modifiers & GDK_SHIFT_MASK) q.flags |= 4;
++    if (restore) q.flags |= 8;
++    if (!udt_select ((UdtRect *) self->band_rects->data, self->band_rects->len, q,
++                     self->band_result->data)) return;
+     g_signal_handlers_block_by_func (self->view_ui, on_ui_selected_children_changed, self);
+-    for (GList *l = children; l != NULL; l = l->next)
+-    {
+-        GtkWidget *child = l->data;
+-        GtkAllocation a;
+-        gboolean hit, initial, selected;
+-        g_autoptr (NautilusViewItemModel) model = NULL;
+-        gtk_widget_get_allocation (child, &a);
+-        g_object_get (child, "model", &model, NULL);
+-        if (model == NULL) continue;
+-        initial = g_hash_table_contains (self->band_initial, nautilus_view_item_model_get_file (model));
+-        hit = crossing ? (right >= a.x && left <= a.x + a.width &&
+-                          bottom >= a.y && top <= a.y + a.height)
+-                       : (left <= a.x && right >= a.x + a.width &&
+-                          top <= a.y && bottom >= a.y + a.height);
+-        selected = restore ? initial :
+-                   (self->band_modifiers & GDK_CONTROL_MASK) ? initial != hit :
+-                   (self->band_modifiers & GDK_SHIFT_MASK) ? initial || hit : hit;
+-        if (selected) gtk_flow_box_select_child (self->view_ui, GTK_FLOW_BOX_CHILD (child));
+-        else gtk_flow_box_unselect_child (self->view_ui, GTK_FLOW_BOX_CHILD (child));
++    for (guint i = 0; i < self->band_children->len; i++)
++    {
++        GtkFlowBoxChild *child;
++        gboolean selected;
++        if (self->band_result->data[i] == self->band_current->data[i]) continue;
++        child = g_ptr_array_index (self->band_children, i);
++        selected = self->band_result->data[i] != 0;
++        if (gtk_widget_get_parent (GTK_WIDGET (child)) != GTK_WIDGET (self->view_ui))
++        {
++            self->band_cache_dirty = TRUE;
++            continue;
++        }
++        self->band_current->data[i] = selected;
++        if (selected) gtk_flow_box_select_child (self->view_ui, child);
++        else gtk_flow_box_unselect_child (self->view_ui, child);
++        changed = TRUE;
+     }
+     g_signal_handlers_unblock_by_func (self->view_ui, on_ui_selected_children_changed, self);
+-    nautilus_files_view_notify_selection_changed (NAUTILUS_FILES_VIEW (self));
++    if (changed) nautilus_files_view_notify_selection_changed (NAUTILUS_FILES_VIEW (self));
+     gtk_widget_queue_draw (GTK_WIDGET (self->view_ui));
+ }
+ 
+@@ -286,6 +351,22 @@
+ }
+ 
+ static gboolean
++band_frame (GtkWidget *widget, GdkFrameClock *clock, gpointer data)
++{
++    NautilusViewIconController *self = data;
++    self->band_frame_id = 0;
++    if (self->band_active && !self->disposed) band_pointer_update (self);
++    return G_SOURCE_REMOVE;
++}
++
++static void
++band_schedule_update (NautilusViewIconController *self)
++{
++    if (self->band_frame_id == 0)
++        self->band_frame_id = gtk_widget_add_tick_callback (GTK_WIDGET (self->view_ui), band_frame, self, NULL);
++}
++
++static gboolean
+ band_autoscroll (gpointer data)
+ {
+     NautilusViewIconController *self = data;
+@@ -296,7 +377,7 @@
+     {
+         double old = gtk_adjustment_get_value (self->vadjustment);
+         gtk_adjustment_set_value (self->vadjustment, old + delta);
+-        if (old != gtk_adjustment_get_value (self->vadjustment)) band_pointer_update (self);
++        if (old != gtk_adjustment_get_value (self->vadjustment)) band_schedule_update (self);
+     }
+     return G_SOURCE_CONTINUE;
+ }
+@@ -304,7 +385,17 @@
+ static void
+ band_end (GtkGestureDrag *gesture, gdouble x, gdouble y, NautilusViewIconController *self)
+ {
++    if (self->band_frame_id != 0)
++    {
++        gtk_widget_remove_tick_callback (GTK_WIDGET (self->view_ui), self->band_frame_id);
++        self->band_frame_id = 0;
++        if (!self->disposed && !self->band_cancelled && self->band_active) band_pointer_update (self);
++    }
++    if (self->band_active && g_getenv ("UDT_PROFILE") != NULL)
++        g_printerr ("UDT band updates=%u cache_builds=%u\n", self->band_updates, self->band_cache_builds);
++    self->band_updates = self->band_cache_builds = 0;
+     self->band_pending = self->band_active = self->band_cancelled = FALSE;
++    band_clear_cache (self);
+     g_clear_handle_id (&self->band_scroll_id, g_source_remove);
+     g_clear_pointer (&self->band_initial, g_hash_table_unref);
+     if (self->disposed) return;
+@@ -318,6 +409,7 @@
+     if (keyval == GDK_KEY_Escape && self->band_active)
+     {
+         update_band_selection (self, TRUE);
++        self->band_cancelled = TRUE;
+         band_end (NULL, 0, 0, self);
+         self->band_cancelled = TRUE;
+         return TRUE;
+@@ -1052,6 +1144,7 @@
+         self->band_y = self->band_end_y = vy;
+         self->band_pointer_x = x;
+         self->band_pointer_y = y;
++        self->band_cache_dirty = TRUE;
+         gtk_get_current_event_state (&self->band_modifiers);
+         g_clear_pointer (&self->band_initial, g_hash_table_unref);
+         self->band_initial = g_hash_table_new_full (g_direct_hash, g_direct_equal, g_object_unref, NULL);
+@@ -1115,7 +1208,7 @@
+         cancel_click_rename (self);
+         self->band_pointer_x = x + offset_x;
+         self->band_pointer_y = y + offset_y;
+-        band_pointer_update (self);
++        band_schedule_update (self);
+         if (self->band_scroll_id == 0) self->band_scroll_id = g_timeout_add (30, band_autoscroll, self);
+         return;
+     }
+@@ -2067,6 +2160,9 @@
+                                  gpointer    user_data)
+ {
+     NautilusViewIconController *self = NAUTILUS_VIEW_ICON_CONTROLLER (user_data);
++    /* Our batch changes block this handler. External selection changes invalidate
++     * the cached state before the next frame. */
++    if (self->band_active) self->band_cache_dirty = TRUE;
+ 
+     if (self->click_rename_file != NULL)
+     {
+@@ -2173,6 +2269,8 @@
+     self->model = nautilus_view_model_new ();
+ 
+     self->view_ui = create_view_ui (self);
++    g_signal_connect_object (self->view_ui, "size-allocate", G_CALLBACK (band_layout_changed), self, 0);
++    g_signal_connect_object (self->model, "items-changed", G_CALLBACK (band_items_changed), self, 0);
+     g_signal_connect_after (self->view_ui, "draw", G_CALLBACK (band_draw), self);
+     g_signal_connect_object (nautilus_clipboard_get (GTK_WIDGET (self)), "owner-change",
+                              G_CALLBACK (cut_owner_changed), self, 0);
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -289,6 +289,21 @@
+   xml
+ ]
+ 
++if get_option ('unity-launcher')
++    nautilus_deps += [unity, dbusmenu]
++    libnautilus_sources += [
++        'unity-quicklist-handler.c',
++        'unity-quicklist-handler.h',
++        'unity-bookmarks-handler.c',
++        'unity-bookmarks-handler.h'
++    ]
++endif
++
++selection_core = custom_target('udt-selection',
++  input: 'udt-selection.rs', output: 'libudt_selection.a',
++  command: [find_program('rustc'), '--edition=2021', '--crate-type=staticlib',
++            '-C', 'opt-level=3', '-C', 'codegen-units=1', '@INPUT@', '-o', '@OUTPUT@'])
++
+ libnautilus = static_library(
+   'nautilus',
+   libnautilus_sources,
+@@ -299,7 +314,7 @@
+ libnautilus_include_dirs = include_directories('.')
+ 
+ libnautilus_dep = declare_dependency(
+-  link_with: libnautilus,
++  link_with: [libnautilus, selection_core],
+   include_directories: [
+     nautilus_include_dirs,
+     libnautilus_include_dirs
+--- /dev/null
++++ b/src/udt-selection.rs
+@@ -0,0 +1,59 @@
++//! Allocation-free selection kernel. GTK ownership stays entirely in the adapter.
++#![deny(unsafe_op_in_unsafe_fn)]
++#[repr(C)]
++#[derive(Clone, Copy, Debug)]
++pub struct Rect { pub x:f64, pub y:f64, pub width:f64, pub height:f64, pub initial:u8, pub reserved:[u8;7] }
++#[repr(C)]
++#[derive(Clone, Copy, Debug)]
++pub struct Query { pub left:f64, pub top:f64, pub right:f64, pub bottom:f64, pub flags:u32, pub reserved:u32 }
++/// Pure safe Rust: no GTK references, allocation, callbacks, or global state.
++pub fn select(rects:&[Rect], q:Query, out:&mut [u8]) -> bool {
++    if rects.len()!=out.len() || q.flags & !15 != 0 ||
++       ![q.left,q.top,q.right,q.bottom].iter().all(|x|x.is_finite()) || q.left>q.right || q.top>q.bottom {return false;}
++    for (r,dst) in rects.iter().zip(out.iter_mut()) {
++        let hit=if q.flags&1!=0 {q.right>=r.x && q.left<=r.x+r.width && q.bottom>=r.y && q.top<=r.y+r.height}
++                else {q.left<=r.x && q.right>=r.x+r.width && q.top<=r.y && q.bottom>=r.y+r.height};
++        let initial=r.initial!=0;
++        *dst=if q.flags&8!=0 {initial} else if q.flags&2!=0 {initial!=hit} else if q.flags&4!=0 {initial||hit} else {hit} as u8;
++    }
++    true
++}
++/// # Safety
++/// Caller owns `n` initialized Rects and `n` writable bytes, valid until return.
++/// Buffers must not overlap, be concurrently mutated, or contain GTK pointers.
++/// No pointer is retained. Null is accepted only for zero length.
++#[unsafe(no_mangle)]
++pub unsafe extern "C" fn udt_select(rects:*const Rect,n:usize,q:Query,out:*mut u8)->i32 {
++    if n==0 {return 1;}
++    if n>10_000_000 || rects.is_null() || out.is_null() || (rects as usize)%std::mem::align_of::<Rect>()!=0 {return 0;}
++    let Some(end_r)=(rects as usize).checked_add(n*std::mem::size_of::<Rect>()) else {return 0;};
++    let Some(end_o)=(out as usize).checked_add(n) else {return 0;};
++    if (rects as usize)<end_o && (out as usize)<end_r {return 0;}
++    // SAFETY: range, alignment and non-overlap checked here; allocation validity
++    // and exclusive access are required from the GTK adapter, on its main thread.
++    let input=unsafe {std::slice::from_raw_parts(rects,n)};
++    let output=unsafe {std::slice::from_raw_parts_mut(out,n)};
++    // Never unwind through C. Algorithm has no indexing or allocation; catch also
++    // protects future changes. OOM/abort outside unwinding is not recoverable.
++    std::panic::catch_unwind(std::panic::AssertUnwindSafe(||select(input,q,output))).unwrap_or(false) as i32
++}
++#[cfg(test)] mod tests {
++ use super::*;
++ #[test] fn exhaustive_geometry_and_modifiers(){
++  for initial in [0,1] {for x in -5..6 {for y in -5..6 {for flags in 0..16 {
++   let r=Rect{x:x as f64,y:y as f64,width:3.,height:4.,initial,reserved:[0;7]};
++   let q=Query{left:0.,top:0.,right:4.,bottom:5.,flags,reserved:0};let mut out=[9];
++   assert!(select(&[r],q,&mut out));
++   let overlap=!(r.x>4. || r.x+3.<0. || r.y>5. || r.y+4.<0.);
++   let contained=r.x>=0. && r.y>=0. && r.x+3.<=4. && r.y+4.<=5.;
++   let hit=if flags&1!=0{overlap}else{contained};let start=initial!=0;
++   assert_eq!(out[0],(if flags&8!=0{start}else if flags&2!=0{start^hit}else if flags&4!=0{start||hit}else{hit}) as u8);
++  }}}}
++ }
++ #[test] fn rejects_invalid_queries(){let r=Rect{x:0.,y:0.,width:1.,height:1.,initial:0,reserved:[0;7]};let mut out=[7];
++  for left in [f64::NAN,f64::INFINITY,2.] {assert!(!select(&[r],Query{left,top:0.,right:1.,bottom:1.,flags:0,reserved:0},&mut out));assert_eq!(out,[7]);}
++ }
++ #[test] fn ffi_rejects_null_and_alias(){let mut r=Rect{x:0.,y:0.,width:1.,height:1.,initial:0,reserved:[0;7]};let q=Query{left:0.,top:0.,right:1.,bottom:1.,flags:0,reserved:0};
++  unsafe{assert_eq!(udt_select(std::ptr::null(),1,q,std::ptr::null_mut()),0);assert_eq!(udt_select(&r,1,q,(&mut r as *mut Rect).cast()),0);assert_eq!(udt_select(std::ptr::null(),0,q,std::ptr::null_mut()),1);}
++ }
++}
+--- /dev/null
++++ b/src/udt-selection.h
+@@ -0,0 +1,20 @@
++#ifndef UDT_SELECTION_H
++#define UDT_SELECTION_H
++#include <stddef.h>
++#include <stdint.h>
++typedef struct { double x,y,width,height; uint8_t initial,reserved[7]; } UdtRect;
++typedef struct { double left,top,right,bottom; uint32_t flags,reserved; } UdtQuery;
++/* Main-thread, nonoverlapping caller-owned buffers. No pointers retained. */
++#ifdef __cplusplus
++extern "C" {
++#endif
++int32_t udt_select(const UdtRect *rects,size_t n,UdtQuery query,uint8_t *out);
++#ifdef __cplusplus
++}
++#define UDT_STATIC_ASSERT static_assert
++#else
++#define UDT_STATIC_ASSERT _Static_assert
++#endif
++UDT_STATIC_ASSERT(sizeof(UdtRect)==40,"Rust/C rectangle ABI mismatch");
++UDT_STATIC_ASSERT(sizeof(UdtQuery)==40,"Rust/C query ABI mismatch");
++#endif
